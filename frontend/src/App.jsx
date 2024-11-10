@@ -1,7 +1,7 @@
 import react from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/login"
-import Register from "./pages/Register"
+import Register from "./pages/register"
 import Home from "./pages/home"
 import NotFound from "./pages/NotFound"
 import Cart from "./pages/cart"
@@ -9,7 +9,7 @@ import Category from "./pages/category"
 import Inventory from "./pages/inventory"
 import Order from "./pages/order"
 import Create from "./pages/create_product"
-import OrderDetails from "./pages/orderdetails"
+
 
 import ProtectedRoute from "./components/ProtectedRoute"
 
