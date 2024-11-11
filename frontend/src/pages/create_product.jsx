@@ -74,7 +74,7 @@ function Create() {
     }
 
     return (<div>
-        <h2>Create a Note</h2>
+        <h2>Create a product</h2>
 
         <form onSubmit={createNote}>
 

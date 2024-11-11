@@ -60,7 +60,7 @@ function Home() {
 
         <div>
             <div>
-                <h2>Notes</h2>
+                <h2>Products</h2>
                 <Button onClick={push_cart}>Cart</Button>
 
                 <Button onClick={()=>navigate('/inventory')}>My products</Button>

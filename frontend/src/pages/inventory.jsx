@@ -107,7 +107,7 @@ function Inventory() {
     
     return (
         <div>
-            <Typography variant="h4">Notes</Typography>
+            <Typography variant="h4">My products</Typography>
             {notes.map((note) => (
                 <div key={note.id}>
                     <Note note={note}></Note>
