@@ -1,7 +1,28 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Note, Category, Order, Order_Details
+from .models import Product, Category, Order, Order_Details, UserProfile
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = UserProfile
+        fields = ["id","user", "mail", "address", "profile_picture"]
+        extra_kwargs = {
+            'mail': {'required': True},
+            'address': {'required': True},
+        }
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,40 +40,32 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id","cate_name","cate_description"]
 
+class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset = Category.objects.all(), many=True)
 
-class NoteSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=True,required=False)
     class Meta:
-        model = Note
-        fields = ["id", "title", "content", "created_at", "author","price","category"]
+        model = Product
+        fields = [
+            "id",
+            "product_name",
+            "content",
+            "created_at",
+            "author",
+            "image",
+            "price",
+            "category",
+        ]
         extra_kwargs = {"author": {"read_only": True}}
 
     def create(self, validated_data):
-        categories_data = validated_data.pop('category', None)
-        note = super().create(validated_data)
-        if categories_data:
-            for category_data in categories_data:
-                categories = [Category.objects.get_or_create(**data)[0] for data in categories_data]
-                note.category.add(*categories)
-        
-        return note
-    
-    def update(self, instance, validated_data):
-        categories_data = validated_data.pop('category', None)
-        
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        
-        if categories_data is not None:  # Only clear and add categories if provided
-            instance.category.clear()
-            categories = [Category.objects.get_or_create(**data)[0] for data in categories_data]
-            instance.category.add(*categories)
+        categories = validated_data.pop('category', [])
+        product = Product.objects.create(**validated_data)
+        product.category.set(categories)
+        return product
 
-        instance.save()
-        return instance
 
 class OrderSerialzier(serializers.ModelSerializer):
-    products = serializers.PrimaryKeyRelatedField(queryset = Note.objects.all(), many=True)
+    products = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all(), many=True)
     
     class Meta:
         model = Order
@@ -68,5 +81,5 @@ class OrderSerialzier(serializers.ModelSerializer):
 class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order_Details
-        fields = ["id","orderId","product","quantity","price"]
+        fields = ["id","orderId","product","quantity","price","confirm"]
         

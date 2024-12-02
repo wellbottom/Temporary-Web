@@ -15,7 +15,7 @@ const OrderDetailsReact = ({order}) =>{
             .get(`/api/orderdetails/?orderid=${orderId}`)
             .then((res) => {
                 Setorderdetails(res.data);
-                
+                console.log(res.data)
                 const calculatedTotal = res.data.reduce((acc, item) => acc + item.price, 0);
                 SetTotal(calculatedTotal);
             })
@@ -31,27 +31,44 @@ const OrderDetailsReact = ({order}) =>{
     }
 
     return(
-        <div key={order.id}>
-             <h3>Order ID:{order.id}</h3>
-             <Typography>order_date:{order_date}</Typography>
-             {isOpen  ?  <Button variant="outlined" onClick={hideDetail}>Hide Detail</Button> : <Button variant="outlined" onClick={()=>{showDetail(order.id)}}>Show Detail</Button>}
+        <div key={order.id} style={{ margin: '20px 0', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+  <h3 style={{ marginBottom: '10px' }}>Order ID: {order.id}</h3>
+  <Typography variant="body1" style={{ marginBottom: '10px' }}>Order Date: {order_date}</Typography>
+  {isOpen ? (
+    <Button variant="outlined" onClick={hideDetail} style={{ marginBottom: '10px' }}>
+      Hide Detail
+    </Button>
+  ) : (
+    <Button variant="outlined" onClick={() => showDetail(order.id)} style={{ marginBottom: '10px' }}>
+      Show Detail
+    </Button>
+  )}
 
-            {isOpen && (
-                <div>
-                {orderdetails.map((detail) =>(
-                    <div key={detail.id}>
-                        <Typography>Product ID: {detail.product} Quantity: {detail.quantity} Price: {detail.price}</Typography>
-                    </div>
-                    
-                ))}
-                {order.paymentmethod === 1 && <Typography>Payment Method: Credit Card</Typography>}
-                {order.paymentmethod === 2 && <Typography>Payment Method: Cash</Typography>}
-                {order.paymentmethod === 3 && <Typography>Payment Method: Debit Card</Typography>}
-                <Typography>Total: {total}</Typography>
-                </div>
-            )}
-            
+  {isOpen && (
+    <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '6px' }}>
+      {orderdetails.map((detail) => (
+        <div key={detail.id} style={{ marginBottom: '10px' }}>
+          <Typography variant="body2">
+            <strong>Product ID:</strong> {detail.product} <strong>Quantity:</strong> {detail.quantity}{' '}
+            <strong>Price:</strong> {detail.price}
+          </Typography>
         </div>
+      ))}
+      <Typography variant="body2" style={{ marginTop: '10px' }}>
+        <strong>Payment Method:</strong>{' '}
+        {order.paymentmethod === 1
+          ? 'Credit Card'
+          : order.paymentmethod === 2
+          ? 'Cash'
+          : 'Debit Card'}
+      </Typography>
+      <Typography variant="h6" style={{ marginTop: '10px' }}>
+        Total: {total}
+      </Typography>
+    </div>
+  )}
+</div>
+
     )
 }
 
