@@ -22,8 +22,6 @@ class Product(models.Model):
     price = models.FloatField(default=2.0)
     category = models.ManyToManyField(Category)
 
-
-
     def __str__(self):
         return f"{self.product_name} (Created at {self.created_at.strftime('%Y-%m-%d')})"
 
